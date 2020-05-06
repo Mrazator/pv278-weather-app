@@ -1,0 +1,34 @@
+@mixin shadow($opacity) {
+    -webkit-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, $opacity);
+    -moz-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, $opacity);
+    box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, $opacity);
+  }
+
+#button {
+    display: block;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 0;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    background-color: #00A991;
+    color: #FFF;
+
+    &:focus {
+        outline: none !important;
+        background-color: rgb(0, 143, 121);
+    }
+
+    &:active {
+        user-select: none;
+    }
+}
+
+.secondary {
+    background-color: #FFF !important;
+    color: #252A31 !important;
+    @include shadow(0.15);
+}

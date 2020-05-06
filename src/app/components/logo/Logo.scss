@@ -1,0 +1,26 @@
+$full-size: 60px;
+$small-size: 22px;
+
+@mixin size($size) {
+    $brno-size: $size*0.4;
+    #brno {
+        font-size: $brno-size;
+        
+    }
+    #trip {
+        font-size: $size;
+        line-height: $size*0.7;
+    }
+}
+
+#logo {
+    font-weight: 700;
+    // margin-bottom: 40px;
+    cursor: default;
+    user-select: none;
+    @include size($full-size);
+
+    &.small {
+        @include size($small-size);
+    }
+}

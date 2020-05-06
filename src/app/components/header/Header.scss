@@ -1,0 +1,39 @@
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 15px;
+    $user-button-size: 45px;
+
+    .invisible {
+        visibility: hidden;
+    }
+
+    .user-button-wrapper {
+        width: $user-button-size;
+        height: $user-button-size;
+    }
+
+    .user-button {
+        fill: #5F738C;
+        width: $user-button-size;
+        height: $user-button-size;
+    }
+
+    .link-user-button {
+        display: block;
+        height: $user-button-size;
+    }
+
+    .back-button-wrapper {
+        width: $user-button-size;
+        height: $user-button-size;
+    }
+
+    .back-button {
+        fill: #5F738C;
+        width: $user-button-size;
+        height: $user-button-size;
+    }
+}

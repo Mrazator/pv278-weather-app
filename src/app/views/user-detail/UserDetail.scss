@@ -1,0 +1,58 @@
+.user-detail {
+    .info {
+        display: flex;
+        flex-direction: column;
+        text-transform: uppercase;
+        align-items: center;
+
+        .account-circle {
+            color: #5F738C;
+            user-select: none;
+            font-size: 110px;
+        }
+
+        h3,
+        h6 {
+            margin: 3px 0;
+        }
+
+        h3 {
+            font-size: 15px;
+        }
+
+        h6 {
+            font-size: 8px;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+    }
+
+    .detail {
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        margin: 20px auto;
+
+        span {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+    }
+
+    .logout-wrapper {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        .logout {
+            width: 50%;
+            margin: 40px auto;
+        }
+    }
+
+    .user-button {
+        fill: #5F738C;
+        $user-button-size: 120px;
+        width: $user-button-size;
+        height: $user-button-size;
+    }
+}

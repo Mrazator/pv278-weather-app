@@ -1,0 +1,32 @@
+#sign-in-form {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+
+    label {
+        color: #5F738C;
+        font-size: 11px;
+        padding: 4px 0;
+        margin-top: 15px;
+        display: block;
+    }
+
+    input[type=text],
+    input[type=password] {
+        display: block;
+        font-size: 12px;
+        padding: 9px 10px;
+        border: 1px solid #BAC7D5;
+        border-radius: 2px;
+        font-family: 'Roboto', sans-serif;
+
+        &:focus {
+            outline: none !important;
+        }
+    }
+
+    .submit {
+        width: 60%;
+        margin: 12px auto;
+    }
+}
