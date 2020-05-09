@@ -1,31 +1,21 @@
 import React, { Component } from 'react';
 import "./SearchForm.scss"
 import Button from '../button/Button';
+import { getDateString } from 'app/util/utils';
+import { ISearchState } from 'app/views/dashboard/Dashboard';
 
-interface IState {
-    from: string,
-    to: string
+interface ISearchFormProps extends ISearchState {
+    onHandleChange: (key: string, value: string) => void
+    onShowWeather: () => Promise<void>
 }
 
-class SearchForm extends Component<{}, IState> {
-
+class SearchForm extends Component<ISearchFormProps> {
     today: string
 
-    constructor(props: {}) {
+    constructor(props: ISearchFormProps) {
         super(props)
 
-        var today = new Date()
-        var weekAfter = new Date()
-        weekAfter.setDate(weekAfter.getDate() - 7)
-
-        var getDateString = (date: Date) => { return `${date.getFullYear()}-${date.getMonth() < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1)}-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}` }
-
-        this.state = {
-            from: getDateString(today),
-            to: getDateString(weekAfter)
-        }
-
-        this.today = getDateString(today)
+        this.today = getDateString(new Date())
     }
 
     onFromChangeValue(value: string) {
@@ -41,13 +31,35 @@ class SearchForm extends Component<{}, IState> {
             <form className="search-form">
                 <div className="input-block">
                     <label htmlFor="from">From</label>
-                    <input type="date" value={this.state.from} min={this.today} onChange={e => this.onFromChangeValue(e.target.value)} id="from" name="From" />
+                    <input
+                        id="from"
+                        name="From"
+                        type="date"
+                        value={this.props.from}
+                        min={this.today}
+                        onChange={e => this.props.onHandleChange("from", e.target.value)}
+                    />
                 </div>
+
                 <div className="input-block">
                     <label htmlFor="to">To</label>
-                    <input type="date" value={this.state.to} min={this.today} onChange={e => this.onToChangeValue(e.target.value)} id="to" name="To" />
+                    <input
+                        id="to"
+                        name="To"
+                        type="date"
+                        value={this.props.to}
+                        min={this.today}
+                        onChange={e => this.props.onHandleChange("to", e.target.value)}
+                    />
                 </div>
-                <Button to="/result" className="show-weather-button">Show Weather</Button>
+
+                <Button
+                    to="/dashboard"
+                    onClick={this.props.onShowWeather}
+                    className="show-weather-button"
+                >
+                    Show Weather
+                </Button>
             </form>
         );
     }

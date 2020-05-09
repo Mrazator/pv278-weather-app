@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 interface IProps {
     to: string,
     className?: string,
-    secondary?: boolean
+    secondary?: boolean,
+    onClick?: () => Promise<void>
 }
 
 class Button extends Component<IProps> {
@@ -14,8 +15,14 @@ class Button extends Component<IProps> {
         if (this.props.secondary) {
             buttonStyle += "secondary"
         }
+
         return (
-            <Link to={this.props.to} id="button" className={buttonStyle}>
+            <Link
+                to={this.props.to}
+                onClick={this.props.onClick}
+                id="button"
+                className={buttonStyle}
+            >
                 {this.props.children}
             </Link>
         );
