@@ -5,6 +5,7 @@ import { getDateString } from 'app/util/utils';
 import { ISearchState } from 'app/views/dashboard/Dashboard';
 
 interface ISearchFormProps extends ISearchState {
+    disabled: boolean
     onHandleChange: (key: string, value: string) => void
     onShowWeather: () => Promise<void>
 }
@@ -18,14 +19,6 @@ class SearchForm extends Component<ISearchFormProps> {
         this.today = getDateString(new Date())
     }
 
-    onFromChangeValue(value: string) {
-        this.setState({ from: value })
-    }
-
-    onToChangeValue(value: string) {
-        this.setState({ to: value })
-    }
-
     render() {
         return (
             <form className="search-form">
@@ -35,7 +28,7 @@ class SearchForm extends Component<ISearchFormProps> {
                         id="from"
                         name="From"
                         type="date"
-                        value={this.props.from}
+                        value={getDateString(this.props.from)}
                         min={this.today}
                         onChange={e => this.props.onHandleChange("from", e.target.value)}
                     />
@@ -47,7 +40,7 @@ class SearchForm extends Component<ISearchFormProps> {
                         id="to"
                         name="To"
                         type="date"
-                        value={this.props.to}
+                        value={getDateString(this.props.to)}
                         min={this.today}
                         onChange={e => this.props.onHandleChange("to", e.target.value)}
                     />
@@ -55,6 +48,7 @@ class SearchForm extends Component<ISearchFormProps> {
 
                 <Button
                     to="/dashboard"
+                    disabled={this.props.disabled}
                     onClick={this.props.onShowWeather}
                     className="show-weather-button"
                 >

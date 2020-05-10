@@ -1,28 +1,34 @@
 import React, { Component } from 'react';
 import "./GraphTile.scss";
 import { Chart } from "react-google-charts";
+import { IProcessedData } from 'app/views/dashboard/Dashboard';
 
-class GraphTile extends Component {
+interface IGraphTileProps {
+    data: IProcessedData[]
+}
+
+class GraphTile extends Component<IGraphTileProps, {}> {
     render() {
+        const transformedData = this.props.data.map(x => {
+            const date: Date = new Date(x.date)
+
+            return [`${date.getDate()}. ${date.getMonth() + 1}.`, x.probability]
+        })
+
         return (
             <Chart
                 width="95%"
                 className="chart"
                 chartType="AreaChart"
-                data={[
-                    ['Day', 'Sunshine'],
-                    ['Mo', 14],
-                    ['Tu', 5],
-                    ['We', 9],
-                    ['Th', 7],
-                    ['Fr', 16],
-                    ['St', 2],
-                    ['Su', 9],
-                ]}
+                data={
+                    [
+                        ['Day', 'Sunshine'],
+                        ...transformedData
+                    ]}
                 options={{
                     areaOpacity: 1,
                     colors: ['#00A991'],
-                    legend: 'none',
+                    // legend: 'none',
                     chartArea: { width: '100%', height: '80%' },
                     vAxis: { textPosition: 'in' },
                     hAxis: { textStyle: { fontName: 'Roboto', bold: true } },

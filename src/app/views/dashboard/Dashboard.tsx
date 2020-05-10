@@ -4,25 +4,44 @@ import Tile from 'app/components/tile/Tile';
 import ActionArea from 'app/components/action-area/ActionArea';
 import SearchForm from 'app/components/search-form/SearchForm';
 import GraphTile from 'app/components/graph-tile/GraphTile';
-import { getDateString } from 'app/util/utils';
 import InTileHeading from 'app/components/in-tile-heading/InTileHeading';
+import { getDiffInDays } from 'app/util/utils';
 
 const API_URI = "https://munisun-d71a.restdb.io/rest"
+
 const PRECIPITATION = "precipitation"
+const SNOW = "snow"
+const SUNSHINE = "sunshine"
+
 const API_KEY = "5df0aababf46220df655d9df"
 
 export interface ISearchState {
-    from: string,
-    to: string,
+    from: Date,
+    to: Date,
+}
+
+
+export interface IProcessedData {
+    date: string,
+    probability: Number,
 }
 
 interface IRawDataState {
-    precipitation: any[]
+    precipitation: any[],
+    sunshine: any[],
+    snow: any[]
+}
+
+interface IProcessedDataState {
+    precipitation: IProcessedData[],
+    sunshine: IProcessedData[],
+    snow: IProcessedData[]
 }
 
 interface IDashBoardState {
     search: ISearchState,
-    rawData: IRawDataState
+    rawData: IRawDataState,
+    processedData: IProcessedDataState
 }
 
 class Dashboard extends Component<{}, IDashBoardState> {
@@ -35,6 +54,13 @@ class Dashboard extends Component<{}, IDashBoardState> {
             },
             rawData: {
                 precipitation: [],
+                sunshine: [],
+                snow: []
+            },
+            processedData: {
+                precipitation: [],
+                sunshine: [],
+                snow: []
             }
         }
 
@@ -49,38 +75,44 @@ class Dashboard extends Component<{}, IDashBoardState> {
                 ...await this.getData()
             }
         })
+
+        await this.processData()
     }
 
     render() {
+        const { rawData, search, processedData } = this.state;
+
+        const isLoading = rawData.precipitation.length === 0 || rawData.sunshine.length === 0 || rawData.snow.length === 0
+
+        const dashBoardData = isLoading // add some loading animation
+            ? <h2>...</h2>
+            : (
+                <>
+                    <Tile title={`Probability of a rain`}>
+                        <GraphTile data={processedData.precipitation} />
+                    </Tile>
+                    <Tile title="Probability of a snow">
+                        <GraphTile data={processedData.snow} />
+                    </Tile>
+                    <Tile title="Probability of a sunshine">
+                        <GraphTile data={processedData.sunshine} />
+                    </Tile>
+                </>
+            )
+
         return (
             <div id="dashboard">
                 <Header />
                 <ActionArea>
                     <Tile>
                         <SearchForm
-                            {...this.state.search}
+                            {...search}
+                            disabled={isLoading}
                             onHandleChange={this.onSearchChangeValue}
                             onShowWeather={this.processData}
                         />
                     </Tile>
-                    {/* <Tile title="Next 7 days">
-                        <GraphTile />
-                    </Tile> */}
-                    <Tile>
-                        <InTileHeading>Rainy days: 2</InTileHeading>
-                    </Tile>
-                    <Tile>
-                        <InTileHeading>Sunny days: 2</InTileHeading>
-                    </Tile>
-                    <Tile>
-                        <InTileHeading>Snowy days: 2</InTileHeading>
-                    </Tile>
-                    <Tile title="Probability of Rain">
-                        <GraphTile />
-                    </Tile>
-                    <Tile title="Last Year Rain Condition">
-                        <GraphTile />
-                    </Tile>
+                    {dashBoardData}
                 </ActionArea>
             </div>
         );
@@ -92,8 +124,8 @@ class Dashboard extends Component<{}, IDashBoardState> {
         weekAfter.setDate(weekAfter.getDate() + 7)
 
         return {
-            from: getDateString(today),
-            to: getDateString(weekAfter)
+            from: today,
+            to: weekAfter
         }
     }
 
@@ -101,7 +133,7 @@ class Dashboard extends Component<{}, IDashBoardState> {
         this.setState({
             search: {
                 ...this.state.search,
-                [key]: value,
+                [key]: new Date(value),
             }
         })
     }
@@ -111,34 +143,87 @@ class Dashboard extends Component<{}, IDashBoardState> {
             "x-apikey": API_KEY
         }
 
-        const precipitation = await fetch(`${API_URI}/${PRECIPITATION}`, {
-            headers
-        })
+        // very bad server performance
+        const [precipitation, snow, sunshine] = await Promise.all([
+            fetch(`${API_URI}/${PRECIPITATION}`, { headers }).then(x => x.json()),
+            fetch(`${API_URI}/${SNOW}`, { headers }).then(x => x.json()),
+            fetch(`${API_URI}/${SUNSHINE}`, { headers }).then(x => x.json())
+        ])
+
+        console.log(precipitation, snow, sunshine)
 
         return {
-            precipitation: await precipitation.json()
+            precipitation,
+            snow,
+            sunshine
         }
     }
 
     // To-do: some validation of search params
     async processData() {
-        if (this.state.rawData.precipitation.length === 0) {
-            return;
-        }
+        const { rawData, search } = this.state;
+        const processedData = await this.getProcessedData(rawData, search)
+
+        console.log(processedData)
+
+        this.setState({
+            ...this.state,
+            processedData
+        })
+    }
+
+    // To-do: worker?
+    async getProcessedData(rawData: any, search: any): Promise<any> {
+        const result: any = {}
         
+        console.log(search)
+        const from = new Date()
+        from.setDate(search.from.getDate() - 1)
 
-        for(const monthlyData of this.state.rawData.precipitation) {
-            const { _id, year, month, ...days } = monthlyData
+        const to = new Date()
+        to.setDate(search.to.getDate() + 1)
 
-            for(const day of Object.keys(days)) {
-                const value = monthlyData[day]
+        for (const key of Object.keys(rawData)) {
+            const monthlyData = rawData[key]
+                .filter((x: any) => x.month - 1 === from.getMonth() || x.month === to.getMonth());
 
-                if(value > 40) {
-                    console.log(value, day, month, month.year)
-                }
+            const daysDiff = getDiffInDays(from, to);
+
+            const processedData: IProcessedData[] = []
+            let currentDate = new Date(from.toUTCString())
+            console.log(currentDate)
+            for (let i = 0; i < daysDiff; i++) {
+                let numOfRecords = 0
+
+                const daySum = monthlyData.reduce((prev: any, curr: any) => {
+                    if (curr.month - 1 === currentDate.getMonth()) {
+                        numOfRecords++;
+                        let happenedOrNot = 0;
+
+                        if (curr[currentDate.getDate()]) {
+                            happenedOrNot = 1
+                        }
+
+                        return prev + happenedOrNot //adding binary value, whether it was i.e raining or not
+                    }
+
+                    return prev
+                }, 0)
+
+                processedData.push({
+                    date: currentDate.toUTCString(),
+                    probability: Math.round(daySum / numOfRecords * 100),
+                })
+
+                // reset
+                currentDate.setDate(currentDate.getDate() + 1)
+                numOfRecords = 0
             }
+
+            result[key] = processedData
         }
-        console.log(this.state.rawData.precipitation)
+
+        return result
     }
 }
 

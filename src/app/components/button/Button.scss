@@ -9,13 +9,15 @@
     border: none;
     border-radius: 2px;
     padding: 10px 0;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     font-family: 'Roboto', sans-serif;
     text-align: center;
     text-decoration: none;
     background-color: #00A991;
     color: #FFF;
+    margin-top: 25px;
+    width: 50%;
 
     &:focus {
         outline: none !important;
