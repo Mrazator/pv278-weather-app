@@ -109,7 +109,7 @@ class Dashboard extends Component<{}, IDashBoardState> {
 
     async getData() {
         const headers: any = {
-            "x-apikey": API_KEY
+            "x-apikey": API_KEY,
         }
 
         // very bad server performance
@@ -118,8 +118,6 @@ class Dashboard extends Component<{}, IDashBoardState> {
             fetch(`${API_URI}/${SNOW}`, { headers }).then(x => x.json()),
             fetch(`${API_URI}/${SUNSHINE}`, { headers }).then(x => x.json())
         ])
-
-        console.log(precipitation, snow, sunshine)
 
         return {
             precipitation,
@@ -133,8 +131,6 @@ class Dashboard extends Component<{}, IDashBoardState> {
         const { rawData, search } = this.state;
         const processedData = await this.getProcessedData(rawData, search)
 
-        console.log(processedData)
-
         this.setState({
             ...this.state,
             processedData
@@ -145,11 +141,10 @@ class Dashboard extends Component<{}, IDashBoardState> {
     async getProcessedData(rawData: any, search: any): Promise<any> {
         const result: any = {}
         
-        console.log(search)
-        const from = new Date()
+        const from = new Date(search.from.getTime())
         from.setDate(search.from.getDate() - 1)
 
-        const to = new Date()
+        const to = new Date(search.to.getTime())
         to.setDate(search.to.getDate() + 1)
 
         for (const key of Object.keys(rawData)) {
@@ -159,8 +154,8 @@ class Dashboard extends Component<{}, IDashBoardState> {
             const daysDiff = getDiffInDays(from, to);
 
             const processedData: IProcessedData[] = []
-            let currentDate = new Date(from.toUTCString())
-            console.log(currentDate)
+            let currentDate = new Date(from.getTime())
+
             for (let i = 0; i < daysDiff; i++) {
                 let numOfRecords = 0
 
