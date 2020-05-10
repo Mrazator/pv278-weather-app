@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import Loader from 'react-loader-spinner'
+
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import "./Button.scss";
+
 import { Link } from 'react-router-dom';
 
 interface IProps {
@@ -24,10 +28,16 @@ class Button extends Component<IProps> {
                     onClick={this.props.onClick}
                     id="button"
                     className={buttonStyle}
-                    style={{ background: 'grey' }}
+                    style={{ background: 'grey', padding: 0 }}
                 >
-                    Loading weather data...
-                </Link>)
+                    <Loader
+                        type="ThreeDots"
+                        color="white"
+                        height={30}
+                        width={30}
+                    />
+                </Link>
+            )
             : (
                 <Link
                     to={this.props.to

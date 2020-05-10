@@ -53,21 +53,19 @@ class Dashboard extends Component<{}, IDashBoardState> {
 
         const isLoading = rawData.precipitation.length === 0 || rawData.sunshine.length === 0 || rawData.snow.length === 0
 
-        const dashBoardData = isLoading // add some loading animation
-            ? <h2>...</h2>
-            : (
-                <>
-                    <Tile title={`Probability of a rain`}>
-                        <GraphTile data={processedData.precipitation} />
-                    </Tile>
-                    <Tile title="Probability of a snow">
-                        <GraphTile data={processedData.snow} />
-                    </Tile>
-                    <Tile title="Probability of a sunshine">
-                        <GraphTile data={processedData.sunshine} />
-                    </Tile>
-                </>
-            )
+        const dashBoardData = !isLoading && (
+            <>
+                <Tile title={`Probability of a rain`}>
+                    <GraphTile data={processedData.precipitation} />
+                </Tile>
+                <Tile title="Probability of a snow">
+                    <GraphTile data={processedData.snow} />
+                </Tile>
+                <Tile title="Probability of a sunshine">
+                    <GraphTile data={processedData.sunshine} />
+                </Tile>
+            </>
+        )
 
         return (
             <div id="dashboard">
@@ -140,7 +138,7 @@ class Dashboard extends Component<{}, IDashBoardState> {
     // To-do: worker?
     async getProcessedData(rawData: any, search: any): Promise<any> {
         const result: any = {}
-        
+
         const from = new Date(search.from.getTime())
         from.setDate(search.from.getDate() - 1)
 
