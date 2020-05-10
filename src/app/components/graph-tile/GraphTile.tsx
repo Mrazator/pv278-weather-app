@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import "./GraphTile.scss";
 import { Chart } from "react-google-charts";
-import { IProcessedData } from 'app/views/dashboard/Dashboard';
+
+import { IProcessedData } from "app/views/dashboard/IDashBoard";
 
 interface IGraphTileProps {
     data: IProcessedData[]

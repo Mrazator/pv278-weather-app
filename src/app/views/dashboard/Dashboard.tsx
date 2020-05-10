@@ -1,50 +1,19 @@
 import React, { Component } from 'react';
+
 import Header from 'app/components/header/Header';
 import Tile from 'app/components/tile/Tile';
 import ActionArea from 'app/components/action-area/ActionArea';
 import SearchForm from 'app/components/search-form/SearchForm';
 import GraphTile from 'app/components/graph-tile/GraphTile';
-import InTileHeading from 'app/components/in-tile-heading/InTileHeading';
+
+import { IDashBoardState, IProcessedData } from 'app/views/dashboard/IDashBoard';
+
 import { getDiffInDays } from 'app/util/utils';
-
-const API_URI = "https://munisun-d71a.restdb.io/rest"
-
-const PRECIPITATION = "precipitation"
-const SNOW = "snow"
-const SUNSHINE = "sunshine"
-
-const API_KEY = "5df0aababf46220df655d9df"
-
-export interface ISearchState {
-    from: Date,
-    to: Date,
-}
-
-
-export interface IProcessedData {
-    date: string,
-    probability: Number,
-}
-
-interface IRawDataState {
-    precipitation: any[],
-    sunshine: any[],
-    snow: any[]
-}
-
-interface IProcessedDataState {
-    precipitation: IProcessedData[],
-    sunshine: IProcessedData[],
-    snow: IProcessedData[]
-}
-
-interface IDashBoardState {
-    search: ISearchState,
-    rawData: IRawDataState,
-    processedData: IProcessedDataState
-}
+import { API_KEY, API_URI, PRECIPITATION, SNOW, SUNSHINE } from 'app/util/api';
 
 class Dashboard extends Component<{}, IDashBoardState> {
+    state: IDashBoardState;
+
     constructor(props: any) {
         super(props)
 
@@ -139,13 +108,13 @@ class Dashboard extends Component<{}, IDashBoardState> {
     }
 
     async getData() {
-        const headers = {
+        const headers: any = {
             "x-apikey": API_KEY
         }
 
         // very bad server performance
         const [precipitation, snow, sunshine] = await Promise.all([
-            fetch(`${API_URI}/${PRECIPITATION}`, { headers }).then(x => x.json()),
+            fetch(`${API_URI}/${PRECIPITATION}`, { headers }).then((x: any) => x.json()),
             fetch(`${API_URI}/${SNOW}`, { headers }).then(x => x.json()),
             fetch(`${API_URI}/${SUNSHINE}`, { headers }).then(x => x.json())
         ])
@@ -204,7 +173,7 @@ class Dashboard extends Component<{}, IDashBoardState> {
                             happenedOrNot = 1
                         }
 
-                        return prev + happenedOrNot //adding binary value, whether it was i.e raining or not
+                        return prev + happenedOrNot //adding binary value, whether the event happened=1 or did not happen=0 it was i.e raining or not
                     }
 
                     return prev

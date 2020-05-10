@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "./SearchForm.scss"
 import Button from '../button/Button';
 import { getDateString } from 'app/util/utils';
-import { ISearchState } from 'app/views/dashboard/Dashboard';
+import { ISearchState } from "app/views/dashboard/IDashBoard";
 
 interface ISearchFormProps extends ISearchState {
     disabled: boolean
