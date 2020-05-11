@@ -1,52 +1,36 @@
-import React, { Component } from "react";
+import React, { lazy, Suspense } from "react";
 import { Router, Route, Switch } from "react-router-dom";
-import Loading from "app/components/loading/Loading";
+
+import { useAuth0 } from "app/util/react-auth0-spa";
+
 import history from "app/util/history"
-import { Auth0Context } from "app/util/auth0-context";
+import Loading from "app/components/loading/Loading";
+
 import SignIn from "app/views/signin/SignIn";
-import Dashboard from "app/views/dashboard/Dashboard";
 import UserDetail from "app/views/user-detail/UserDetail";
 
-interface IState {
-    isLoading: boolean,
-    isAuthenticated: boolean
-}
+const Dashboard = lazy(() => import('app/views/dashboard/Dashboard'));
 
-class App extends Component<{}, IState> {
+function App(props: {}) {
+    const { isAuthenticated } = useAuth0()
 
-    constructor(props: any) {
-        super(props)
-        const { loading, isAuthenticated } = Auth0Context.Consumer
-        this.state = {
-            isLoading: loading,
-            isAuthenticated: isAuthenticated
-        }
-    }
-
-    render() {
-        if (this.state.isLoading) {
-            return <Loading />;
-        }
-
-        return (
-            <div>
+    return (
+        <div>
+            <Suspense fallback={<Loading />}>
                 <Router history={history}>
-                    {this.state.isAuthenticated && (
-                        // do something when authenticated
-                        <div></div>
-                    )}
                     <main>
                         <Switch>
                             <Route path="/" exact component={SignIn} />
-                            <Route path="/dashboard" component={Dashboard} />
-                            <Route path="/user" component={UserDetail} />
+                            {isAuthenticated && [
+                                <Route key="1" path="/dashboard" component={Dashboard} />,
+                                <Route key="2" path="/user" component={UserDetail} />
+                            ]}
                         </Switch>
                     </main>
                 </Router>
-            </div>
-        )
-    }
-
+            </Suspense>
+        </div>
+    )
 }
 
 export default App;

@@ -3,16 +3,30 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import history from 'app/util/history';
-import { Auth0Provider } from 'app/util/auth0-context';
 import App from 'App';
+import { Auth0Provider } from 'app/util/react-auth0-spa';
+
+const config = {
+  domain: 'dev-g301bek6.eu.auth0.com',
+  clientId: 'gLEWkRd0ps189NdwYgAXcw456lHVLZ7o'
+}
 
 const onRedirectCallback = (appState: any) => {
-  history.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
+  history.push(
+    appState && appState.targetUrl
+      ? appState.targetUrl
+      : window.location.pathname
+  );
 };
 
 ReactDOM.render(
   <React.StrictMode>
-    <Auth0Provider>
+    <Auth0Provider
+      domain={config.domain}
+      client_id={config.clientId}
+      redirect_uri={window.location.origin}
+      onRedirectCallback={() => onRedirectCallback}
+    >
       <App />
     </Auth0Provider>
   </React.StrictMode>,

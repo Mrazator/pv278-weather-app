@@ -7,7 +7,7 @@ import "./Button.scss";
 import { Link } from 'react-router-dom';
 
 interface IProps {
-    to: string,
+    to?: string,
     disabled?: boolean,
     className?: string,
     secondary?: boolean,
@@ -40,8 +40,7 @@ class Button extends Component<IProps> {
             )
             : (
                 <Link
-                    to={this.props.to
-                    }
+                    to="#"
                     onClick={this.props.onClick}
                     id="button"
                     className={buttonStyle}

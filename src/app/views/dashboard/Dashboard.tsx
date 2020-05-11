@@ -168,7 +168,6 @@ class Dashboard extends Component<{}, IDashBoardState> {
             const monthlyData = rawData[key]
                 .filter((x: any) => x.month - 1 >= from.getMonth() || x.month - 1 <= to.getMonth());
 
-            console.log(monthlyData)
             const daysDiff = getDiffInDays(from, to);
 
             const processedData: IProcessedData[] = []

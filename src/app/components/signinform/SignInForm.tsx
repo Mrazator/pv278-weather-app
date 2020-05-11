@@ -1,20 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './SignInForm.scss'
-import { Link } from 'react-router-dom';
 import Button from '../button/Button';
+import { useAuth0 } from "../../util/react-auth0-spa";
 
-class SignInForm extends Component {
-    render() {
-        return (
-            <form id="sign-in-form">
-                <label htmlFor="email">Email</label>
-                <input id="email" type="text" />
-                <label htmlFor="password">Password</label>
-                <input id="password" type="password" />
-                <Button className="submit" to="/dashboard">Login</Button>
-            </form>
-        );
-    }
+function SignInForm(props: any) {
+    const { loginWithPopup } = useAuth0();
+
+    return (
+        <form id="sign-in-form">
+            <Button onClick={() => loginWithPopup({})} className="submit">Login</Button>
+        </form>
+    );
 }
 
 export default SignInForm;
