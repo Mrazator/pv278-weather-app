@@ -17,4 +17,15 @@
         display: flex;
         justify-content: center;
     }
+
+    .top {
+        top: -20px;
+        position: relative;
+    }
+
+    .under {
+        background-color: #F5F7F9;
+        z-index: -1;
+        padding-bottom: 40px;
+    }
 }

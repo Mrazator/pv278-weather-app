@@ -10,6 +10,8 @@ import { IDashBoardState, IProcessedData } from 'app/views/dashboard/IDashBoard'
 
 import { getDiffInDays } from 'app/util/utils';
 import { API_KEY, API_URI, PRECIPITATION, SNOW, SUNSHINE } from 'app/util/api';
+import DynamicTable, { Column, IRow } from 'app/components/dynamic-table/DynamicTable';
+import SearchDescription from 'app/components/search-description/SearchDescription';
 
 class Dashboard extends Component<{}, IDashBoardState> {
     state: IDashBoardState;
@@ -30,12 +32,19 @@ class Dashboard extends Component<{}, IDashBoardState> {
                 precipitation: [],
                 sunshine: [],
                 snow: []
+            },
+            table: {
+                tableRows: [],
+                sortedBy: Column.DAY
             }
         }
 
         this.getData = this.getData.bind(this)
         this.onSearchChangeValue = this.onSearchChangeValue.bind(this)
         this.processData = this.processData.bind(this)
+        this.sortBy = this.sortBy.bind(this)
+        this.getAverageValue = this.getAverageValue.bind(this)
+        this.getTableRows = this.getTableRows.bind(this)
     }
 
     async componentDidMount() {
@@ -55,23 +64,28 @@ class Dashboard extends Component<{}, IDashBoardState> {
 
         const dashBoardData = !isLoading && (
             <>
-                <Tile title={`Probability of a rain`}>
-                    <GraphTile data={processedData.precipitation} />
-                </Tile>
-                <Tile title="Probability of a snow">
-                    <GraphTile data={processedData.snow} />
-                </Tile>
-                <Tile title="Probability of a sunshine">
-                    <GraphTile data={processedData.sunshine} />
-                </Tile>
-            </>
+                    <Tile title={`Probability of a rain`}>
+                        <GraphTile data={processedData.precipitation} weatherDetailName="Rain" />
+                    </Tile>
+                    <Tile title="Probability of a snow">
+                        <GraphTile data={processedData.snow} weatherDetailName="Snow" />
+                    </Tile>
+                    <Tile title="Probability of a sunshine">
+                        <GraphTile data={processedData.sunshine} weatherDetailName="Sunshine" />
+                    </Tile>
+                    <DynamicTable
+                        title="Average data"
+                        tableRows={this.state.table.tableRows}
+                        sortBy={this.sortBy}
+                    />
+                </>
         )
 
         return (
             <div id="dashboard">
                 <Header />
                 <ActionArea>
-                    <Tile>
+                    <Tile underTile={<SearchDescription />}>
                         <SearchForm
                             {...search}
                             disabled={isLoading}
@@ -128,10 +142,15 @@ class Dashboard extends Component<{}, IDashBoardState> {
     async processData() {
         const { rawData, search } = this.state;
         const processedData = await this.getProcessedData(rawData, search)
+        const tableRows = this.getTableRows(search.from, search.to)
 
         this.setState({
             ...this.state,
-            processedData
+            processedData,
+            table: {
+                tableRows,
+                sortedBy: Column.DAY
+            }
         })
     }
 
@@ -175,7 +194,7 @@ class Dashboard extends Component<{}, IDashBoardState> {
 
                 processedData.push({
                     date: currentDate.toUTCString(),
-                    probability: Math.round(daySum / numOfRecords * 100),
+                    probability: daySum / numOfRecords,
                 })
 
                 // reset
@@ -187,6 +206,82 @@ class Dashboard extends Component<{}, IDashBoardState> {
         }
 
         return result
+    }
+
+    // --------------------
+    // TABLE METHODS
+    // --------------------
+
+    private sortBy(currentSort: Column): void {
+        var tableRows = this.state.table.tableRows;
+        if (currentSort === this.state.table.sortedBy) {
+            tableRows.reverse()
+            this.setState({
+                ...this.state,
+                table: {
+                    tableRows,
+                    sortedBy: currentSort
+                }
+            })
+        } else {
+            switch (currentSort) {
+                case Column.DAY:
+                    tableRows.sort((a: IRow, b: IRow) => {
+                        return a.day < b.day ? -1 : 1;
+                    })
+                    break;
+                case Column.PRECIPITATION:
+                    tableRows.sort((a: IRow, b: IRow) => {
+                        return a.precipitation - b.precipitation;
+                    })
+                    break;
+                case Column.SNOW:
+                    tableRows.sort((a: IRow, b: IRow) => {
+                        return a.snow - b.snow;
+                    })
+                    break;
+                case Column.SUNSHINE:
+                    tableRows.sort((a: IRow, b: IRow) => {
+                        return a.sunshine - b.sunshine;
+                    })
+                    break;
+            }
+            this.setState({
+                ...this.state,
+                table: {
+                    tableRows,
+                    sortedBy: currentSort
+                }
+            })
+        }
+    }
+
+    private getAverageValue(rawData: any, date: Date): number {
+        let value = 0;
+        let data = rawData.filter((month: any) => {
+            return month.month === date.getMonth() + 1
+        });
+        data.forEach((month: any) => {
+            value += month[date.getDate()]
+        })
+        value /= data.length;
+        return value;
+    }
+
+    private getTableRows(from: Date, to: Date): IRow[] {
+        const table: IRow[] = []
+        for (let index = 0; index <= getDiffInDays(from, to); index++) {
+            let tmpDate = new Date(from)
+            tmpDate.setDate(tmpDate.getDate() + index)
+
+            table.push({
+                day: tmpDate,
+                precipitation: this.getAverageValue(this.state.rawData.precipitation, tmpDate),
+                snow: this.getAverageValue(this.state.rawData.snow, tmpDate),
+                sunshine: this.getAverageValue(this.state.rawData.sunshine, tmpDate)
+            })
+        }
+        return table
     }
 }
 

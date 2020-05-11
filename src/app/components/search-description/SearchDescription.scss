@@ -1,0 +1,21 @@
+.search-description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+    width: 90%;
+
+    & > * {
+        width: 100%;
+    }
+    .search-description-title {
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .search-description-subtitle {
+        margin-top: 15px;
+        font-size: 18px;
+        font-weight: 400;
+    }
+}

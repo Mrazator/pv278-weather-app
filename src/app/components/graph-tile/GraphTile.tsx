@@ -5,7 +5,8 @@ import { Chart } from "react-google-charts";
 import { IProcessedData } from "app/views/dashboard/IDashBoard";
 
 interface IGraphTileProps {
-    data: IProcessedData[]
+    data: IProcessedData[],
+    weatherDetailName: string
 }
 
 class GraphTile extends Component<IGraphTileProps, {}> {
@@ -23,16 +24,16 @@ class GraphTile extends Component<IGraphTileProps, {}> {
                 chartType="AreaChart"
                 data={
                     [
-                        ['Day', 'Sunshine'],
+                        ['Day', this.props.weatherDetailName],
                         ...transformedData
                     ]}
                 options={{
                     areaOpacity: 1,
-                    colors: ['#00A991'],
-                    // legend: 'none',
+                    colors: ['#5882CC'],
+                    legend: 'none',
                     chartArea: { width: '100%', height: '80%' },
-                    vAxis: { textPosition: 'in' },
-                    hAxis: { textStyle: { fontName: 'Roboto', bold: true } },
+                    vAxis: { textPosition: 'in', format: 'percent', maxValue: 1, ticks: [0,0.5,1] },
+                    hAxis: { textPosition: 'in', textStyle: { fontName: 'Roboto', bold: true, auraColor: '#F4F4F4', opacity: 0.8 } },
                     annotations: {
                         textStyle: {
                             fontName: 'Roboto'
@@ -45,46 +46,3 @@ class GraphTile extends Component<IGraphTileProps, {}> {
 }
 
 export default GraphTile;
-
-/*
-<!DOCTYPE html>
-<html lang="en-US">
-<body>
-
-<h1>My Web Page</h1>
-
-<div id="piechart"></div>
-
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-<script type="text/javascript">
-// Load google charts
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChart);
-
-// Draw the chart and set the chart values
-function drawChart() {
-  var data = google.visualization.arrayToDataTable([
-  ['Day', 'Rain per Day'],
-  ['Mo', 1],
-  ['Tu', 0.5],
-  ['We', 0.02],
-  ['Th', 0.09],
-  ['Fr', 0.15],
-  ['Sa', 0.6],
-  ['Su', 0.9],
-]);
-
-  // Optional; add a title and set the width and height of the chart
-  var options = {'title':'My Average Day', 'width':550, 'height':400, 'lineWidth': 1, 'areaOpacity': 1, 'colors': ['#F3C'], 'vAxis': {'maxValue': 1, 'ticks': [0, 0.5, 1], 'format': 'percent'}, 'legend': {'position': 'none'}};
-
-  // Display the chart inside the <div> element with id="piechart"
-  var chart = new google.visualization.AreaChart(document.getElementById('piechart'));
-  chart.draw(data, options);
-}
-</script>
-
-</body>
-</html>
-
-*/
