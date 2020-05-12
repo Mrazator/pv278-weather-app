@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "./SearchForm.scss"
 import Button from '../button/Button';
-import { getDateString } from 'app/util/utils';
+import { getDateString, getDiffInDays } from 'app/util/utils';
 import { ISearchState } from "app/views/dashboard/IDashBoard";
 
 interface ISearchFormProps extends ISearchState {
@@ -20,6 +20,12 @@ class SearchForm extends Component<ISearchFormProps> {
     }
 
     render() {
+        var errorTile = <></>
+        if (this.props.from > this.props.to) {
+            errorTile = <div className="search-form-error">Invalid date range.</div>
+        } else if (getDiffInDays(this.props.from, this.props.to) > 10) {
+            errorTile = <div className="search-form-error">Date range must not be longer then 10 days.</div>
+        }
         return (
             <form className="search-form">
                 <div className="input-block">
@@ -45,7 +51,7 @@ class SearchForm extends Component<ISearchFormProps> {
                         onChange={e => this.props.onHandleChange("to", e.target.value)}
                     />
                 </div>
-
+                {errorTile}
                 <Button
                     to="/dashboard"
                     disabled={this.props.disabled}

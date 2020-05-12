@@ -147,6 +147,11 @@ class Dashboard extends Component<{}, IDashBoardState> {
     // To-do: some validation of search params
     async processData() {
         const { rawData, search } = this.state;
+
+        if (getDiffInDays(search.from, search.to) > 10 || getDiffInDays(search.from, search.to) < 0) {
+            return
+        }
+
         const processedData = await this.getProcessedData(rawData, search)
         const tableRows = this.getTableRows(search.from, search.to)
 
@@ -223,14 +228,14 @@ class Dashboard extends Component<{}, IDashBoardState> {
         if (currentSort === this.state.table.sortedBy) {
             tableRows.reverse()
             let dir = (direction === "ascending") ? "descending" : "ascending"
-                this.setState({
-                    ...this.state,
-                    table: {
-                        tableRows,
-                        sortedBy: currentSort,
-                        direction: dir
-                    }
-                })
+            this.setState({
+                ...this.state,
+                table: {
+                    tableRows,
+                    sortedBy: currentSort,
+                    direction: dir
+                }
+            })
         } else {
             switch (currentSort) {
                 case Column.DAY:
