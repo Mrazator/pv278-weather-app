@@ -18,7 +18,7 @@ function UserDetail(props: RouteComponentProps) {
             <Header history={props.history} path={props.location.pathname} />
             <ActionArea>
                 <div className="info">
-                    <UserIcon className="user-button" />
+                    <UserIcon className="user-picture" />
                     <h3>{user.email}</h3>
                     <h6>{user.name}</h6>
                 </div>

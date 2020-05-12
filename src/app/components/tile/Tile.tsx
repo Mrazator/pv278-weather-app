@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import "./Tile.scss"
 
 interface IProps {
-    title?: string,
+    title?: ReactNode,
     underTile?: ReactNode
 }
 

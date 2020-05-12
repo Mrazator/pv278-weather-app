@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import "./DynamicTable.scss";
+import Arrow from '../icons/Arrow';
 
 interface IProps {
     title: string,
-    tableRows: IRow[],
-    sortBy: (currentSort: Column) => void
+    sortBy: (currentSort: Column) => void,
+    tableState: ITableState
 }
 
 export interface IRow {
@@ -17,6 +18,7 @@ export interface IRow {
 export interface ITableState {
     tableRows: IRow[],
     sortedBy: Column,
+    direction: string
 }
 
 export enum Column {
@@ -39,20 +41,26 @@ class DynamicTable extends Component<IProps> {
     }
 
     render() {
+        var columnHeaders = []
+        for (let column in Column) {
+            let c: Column = Column[column as keyof typeof Column];
+            columnHeaders.push(
+                <th onClick={() => this.props.sortBy(c)}>
+                    <span className="table-head-text">{c}{this.props.tableState.sortedBy == c && <Arrow className={this.props.tableState.direction} />}</span>
+                </th>
+            )
+        }
         return (
             <div className="dynamic-table">
                 <span className="title">{this.props.title}</span>
                 <table cellSpacing="5px">
                     <thead>
                         <tr>
-                            <th onClick={() => this.props.sortBy(Column.DAY)}>{Column.DAY}</th>
-                            <th onClick={() => this.props.sortBy(Column.PRECIPITATION)}>{Column.PRECIPITATION}</th>
-                            <th onClick={() => this.props.sortBy(Column.SUNSHINE)}>{Column.SUNSHINE}</th>
-                            <th onClick={() => this.props.sortBy(Column.SNOW)}>{Column.SNOW}</th>
+                            {columnHeaders}
                         </tr>
                     </thead >
                     <tbody>
-                        {this.displayRecords(this.props.tableRows)}
+                        {this.displayRecords(this.props.tableState.tableRows)}
                     </tbody>
                 </table >
             </div >

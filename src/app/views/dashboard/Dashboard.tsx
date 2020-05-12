@@ -12,6 +12,11 @@ import { getDiffInDays } from 'app/util/utils';
 import { API_KEY, API_URI, PRECIPITATION, SNOW, SUNSHINE } from 'app/util/api';
 import DynamicTable, { Column, IRow } from 'app/components/dynamic-table/DynamicTable';
 import SearchDescription from 'app/components/search-description/SearchDescription';
+import Sun from 'app/components/icons/Sun';
+import Snowflake from 'app/components/icons/Snowflake';
+import Cloud from 'app/components/icons/Cloud';
+import { useAuth0, Auth0Provider, Auth0Context } from 'app/util/react-auth0-spa';
+import { stringify } from 'querystring';
 
 class Dashboard extends Component<{}, IDashBoardState> {
     state: IDashBoardState;
@@ -35,7 +40,8 @@ class Dashboard extends Component<{}, IDashBoardState> {
             },
             table: {
                 tableRows: [],
-                sortedBy: Column.DAY
+                sortedBy: Column.DAY,
+                direction: "ascending",
             }
         }
 
@@ -64,21 +70,21 @@ class Dashboard extends Component<{}, IDashBoardState> {
 
         const dashBoardData = !isLoading && (
             <>
-                    <Tile title={`Probability of a rain`}>
-                        <GraphTile data={processedData.precipitation} weatherDetailName="Rain" />
-                    </Tile>
-                    <Tile title="Probability of a snow">
-                        <GraphTile data={processedData.snow} weatherDetailName="Snow" />
-                    </Tile>
-                    <Tile title="Probability of a sunshine">
-                        <GraphTile data={processedData.sunshine} weatherDetailName="Sunshine" />
-                    </Tile>
-                    <DynamicTable
-                        title="Average data"
-                        tableRows={this.state.table.tableRows}
-                        sortBy={this.sortBy}
-                    />
-                </>
+                <Tile title={<><Cloud style={{ height: "23px" }} />Probability of a rain</>}>
+                    <GraphTile data={processedData.precipitation} weatherDetailName="Rain" />
+                </Tile>
+                <Tile title={<><Snowflake style={{ height: "23px" }} />Probability of a snow</>}>
+                    <GraphTile data={processedData.snow} weatherDetailName="Snow" />
+                </Tile>
+                <Tile title={<><Sun style={{ height: "23px" }} />Probability of a sunshine</>}>
+                    <GraphTile data={processedData.sunshine} weatherDetailName="Sunshine" />
+                </Tile>
+                <DynamicTable
+                    title="Average data"
+                    sortBy={this.sortBy}
+                    tableState={this.state.table}
+                />
+            </>
         )
 
         return (
@@ -149,7 +155,8 @@ class Dashboard extends Component<{}, IDashBoardState> {
             processedData,
             table: {
                 tableRows,
-                sortedBy: Column.DAY
+                sortedBy: Column.DAY,
+                direction: "ascending"
             }
         })
     }
@@ -212,16 +219,18 @@ class Dashboard extends Component<{}, IDashBoardState> {
     // --------------------
 
     private sortBy(currentSort: Column): void {
-        var tableRows = this.state.table.tableRows;
+        var { tableRows, direction } = this.state.table;
         if (currentSort === this.state.table.sortedBy) {
             tableRows.reverse()
-            this.setState({
-                ...this.state,
-                table: {
-                    tableRows,
-                    sortedBy: currentSort
-                }
-            })
+            let dir = (direction === "ascending") ? "descending" : "ascending"
+                this.setState({
+                    ...this.state,
+                    table: {
+                        tableRows,
+                        sortedBy: currentSort,
+                        direction: dir
+                    }
+                })
         } else {
             switch (currentSort) {
                 case Column.DAY:
@@ -249,7 +258,8 @@ class Dashboard extends Component<{}, IDashBoardState> {
                 ...this.state,
                 table: {
                     tableRows,
-                    sortedBy: currentSort
+                    sortedBy: currentSort,
+                    direction: "ascending"
                 }
             })
         }

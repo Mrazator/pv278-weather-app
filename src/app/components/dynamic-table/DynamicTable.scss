@@ -3,9 +3,10 @@
 
     .title {
         font-weight: 500;
-        margin: 10px 0;
+        margin: 15px 0;
         width: 100%;
         display: block;
+        font-size: 22px;
     }
 
     input {
@@ -36,6 +37,8 @@
             border: none;
             border-bottom: 1px solid #BAC7D5;
             cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         th,
@@ -59,6 +62,17 @@
             background-color: #F4F4F4;
             width: 15%;
             white-space: nowrap;
+        }
+        .table-head-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .ascending {
+                transform: rotate(180deg);
+            }
+            .descending {
+                transform: rotate(0deg);
+            }
         }
     }
 }
